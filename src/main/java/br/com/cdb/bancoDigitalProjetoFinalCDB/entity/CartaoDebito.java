@@ -1,0 +1,28 @@
+package br.com.cdb.bancoDigitalProjetoFinalCDB.entity;
+
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusCartao;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "cartaoDebito")
+public class CartaoDebito extends Cartao{
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int limiteDiario;
+
+    public CartaoDebito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, int limiteDiario) {
+        super(numeroCartao, senha, ativo, status, tipo);
+        this.limiteDiario = limiteDiario;
+    }
+
+    public int getLimiteDiario() {
+        return limiteDiario;
+    }
+
+    public void setLimiteDiario(int limiteDiario) {
+        this.limiteDiario = limiteDiario;
+    }
+}
