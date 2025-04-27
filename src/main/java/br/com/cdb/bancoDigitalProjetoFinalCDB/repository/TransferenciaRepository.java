@@ -10,4 +10,6 @@ import java.util.List;
 public interface TransferenciaRepository extends JpaRepository<Transferencia, Long> {
 
     List<Transferencia> findByContaOrigemId(Long contaId);
+
     List<Transferencia> findByContaDestinoId(Long contaId);
+}
