@@ -27,22 +27,6 @@ public class Cartao {
     @JoinColumn(name = "numero_conta")
     private Conta conta;
 
-    public StatusCartao getStatus() {
-        return status;
-    }
-
-    public void setStatus(StatusCartao status) {
-        this.status = status;
-    }
-
-    public TipoCartao getTipo() {
-        return tipo;
-    }
-
-    public void setTipo(TipoCartao tipo) {
-        this.tipo = tipo;
-    }
-
     public int getNumeroCartao() {
         return numeroCartao;
     }
@@ -67,12 +51,37 @@ public class Cartao {
         this.ativo = ativo;
     }
 
-    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo) {
+    public StatusCartao getStatus() {
+        return status;
+    }
+
+    public void setStatus(StatusCartao status) {
+        this.status = status;
+    }
+
+    public TipoCartao getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoCartao tipo) {
+        this.tipo = tipo;
+    }
+
+    public Conta getConta() {
+        return conta;
+    }
+
+    public void setConta(Conta conta) {
+        this.conta = conta;
+    }
+
+    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;
         this.ativo = ativo;
         this.status = status;
         this.tipo = tipo;
+        this.conta = conta;
     }
 
 }
