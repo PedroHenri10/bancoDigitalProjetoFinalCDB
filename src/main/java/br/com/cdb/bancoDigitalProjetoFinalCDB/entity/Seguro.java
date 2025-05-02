@@ -24,7 +24,6 @@ public class Seguro {
     @JoinColumn(name = "cartao_credito_id")
     private CartaoCredito cartaoCredito;
 
-    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -67,6 +66,9 @@ public class Seguro {
 
     public void setCartaoCredito(CartaoCredito cartaoCredito) {
         this.cartaoCredito = cartaoCredito;
+    }
+
+    public Seguro() {
     }
 
     public Seguro(Long id, String numeroApolice, TiposSeguro tipo, double valor, String dataInicio, CartaoCredito cartaoCredito) {
