@@ -3,6 +3,7 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.OperacaoNaoPermitidaException;
@@ -37,6 +38,10 @@ public class SeguroService {
             throw new OperacaoNaoPermitidaException("Cartão sem cliente associado.");
         }
 
+        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_VIAGEM)) {
+            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro viagem.");
+        }
+
         TipoCliente tipo = cartao.getConta().getCliente().getTipoCliente();
         double valor = switch (tipo) {
             case PREMIUM -> 0.0;
@@ -53,13 +58,29 @@ public class SeguroService {
         return seguroRepository.save(seguro);
     }
 
-    public Seguro criarSeguroFraude(CartaoCredito cartaoCredito) {
+    public Seguro contratarSeguroFraude(Long cartaoId) {
+        Cartao cartao = cartaoRepository.findById(cartaoId)
+                .orElseThrow(() -> new OperacaoNaoPermitidaException("Cartão não encontrado."));
+
+        if (!(cartao instanceof CartaoCredito credito)) {
+            throw new OperacaoNaoPermitidaException("Seguro fraude disponível apenas para cartões de crédito.");
+        }
+
+        if (cartao.getConta() == null || cartao.getConta().getCliente() == null) {
+            throw new OperacaoNaoPermitidaException("Cartão sem cliente associado.");
+        }
+
+        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_FRAUDE)) {
+            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro fraude.");
+        }
+
         Seguro seguro = new Seguro();
         seguro.setTipo(TiposSeguro.SEGURO_FRAUDE);
         seguro.setValor(5000.0);
         seguro.setNumeroApolice(UUID.randomUUID().toString());
         seguro.setDataInicio(LocalDate.now().toString());
-        seguro.setCartaoCredito(cartaoCredito);
+        seguro.setCartaoCredito(credito);
+
         return seguroRepository.save(seguro);
     }
 
