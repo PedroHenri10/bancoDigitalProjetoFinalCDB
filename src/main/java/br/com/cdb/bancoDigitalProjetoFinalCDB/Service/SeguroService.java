@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -26,9 +27,12 @@ public class SeguroService {
     @Autowired
     private CartaoRepository cartaoRepository;
 
-    public Seguro contratarSeguroViagem(Long cartaoId) {
-        Cartao cartao = cartaoRepository.findById(cartaoId)
-                .orElseThrow(() -> new OperacaoNaoPermitidaException("Cartão não encontrado."));
+    public Seguro contratarSeguroViagem(int cartaoId) {
+        Cartao cartao = cartaoRepository.findByNumeroConta(cartaoId);
+
+        if (cartao == null) {
+            throw new OperacaoNaoPermitidaException("Cartão não encontrado.");
+        }
 
         if (!(cartao instanceof CartaoCredito credito)) {
             throw new OperacaoNaoPermitidaException("Seguro viagem disponível apenas para cartões de crédito.");
@@ -58,20 +62,24 @@ public class SeguroService {
         return seguroRepository.save(seguro);
     }
 
-    public Seguro contratarSeguroFraude(Long cartaoId) {
-        Cartao cartao = cartaoRepository.findById(cartaoId)
-                .orElseThrow(() -> new OperacaoNaoPermitidaException("Cartão não encontrado."));
+    public Seguro contratarSeguroFraude(int cartaoId) {
+
+        Cartao cartao = cartaoRepository.findByNumeroConta(cartaoId);
+
+        if (cartao == null) {
+            throw new OperacaoNaoPermitidaException("Cartão não encontrado.");
+        }
 
         if (!(cartao instanceof CartaoCredito credito)) {
-            throw new OperacaoNaoPermitidaException("Seguro fraude disponível apenas para cartões de crédito.");
+            throw new OperacaoNaoPermitidaException("Seguro viagem disponível apenas para cartões de crédito.");
         }
 
         if (cartao.getConta() == null || cartao.getConta().getCliente() == null) {
             throw new OperacaoNaoPermitidaException("Cartão sem cliente associado.");
         }
 
-        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_FRAUDE)) {
-            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro fraude.");
+        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_VIAGEM)) {
+            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro viagem.");
         }
 
         Seguro seguro = new Seguro();

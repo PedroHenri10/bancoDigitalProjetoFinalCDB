@@ -9,4 +9,5 @@ import java.util.List;
 public interface CartaoRepository extends JpaRepository<Cartao, Long>{
     List<Cartao> findByClienteId(Long clienteId);
     List<Cartao> findByContaId(Long contaId);
+    Cartao findByNumeroConta(int numeroCartao);
 }
