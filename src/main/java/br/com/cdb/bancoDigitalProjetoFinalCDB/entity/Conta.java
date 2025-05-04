@@ -22,7 +22,7 @@ public class Conta {
     @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
     private List<Cartao> cartoes;
 
-    public long getNumeroConts() {
+    public long getNumeroConta() {
         return numeroConta;
     }
 

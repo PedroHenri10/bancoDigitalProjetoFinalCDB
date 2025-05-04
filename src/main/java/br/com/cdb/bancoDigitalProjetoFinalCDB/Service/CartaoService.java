@@ -4,6 +4,7 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.CartaoNaoEncontradoException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.OperacaoNaoPermitidaException;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.CartaoRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,10 @@ public class CartaoService {
     }
 
     public Cartao criarCartaoCredito(Cartao cartao){
+        validarSenha(cartao.getSenha());
+
+        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta()."CREDITO");
+
         cartao.setTipo(TipoCartao.CREDITO);
         cartao.setStatus(StatusCartao.ATIVO);
         return cartaoRepository.save(cartao);
@@ -36,6 +41,12 @@ public class CartaoService {
         Cartao cartao = cartaoRepository.findById(id).orElseThrow(() -> new CartaoNaoEncontradoException("Cartao não encontrado."));
         cartao.setStatus(StatusCartao.INATIVO);
         return cartaoRepository.save(cartao);
+    }
+
+    private void validarSenha(int senha){
+        if(senha < 1000){
+            throw new OperacaoNaoPermitidaException("Senha inválida: mínimo 4 digitos");
+        }
     }
 
 }
