@@ -4,7 +4,7 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
 import jakarta.persistence.*;
 
-import java.util.List;
+import java.math.BigDecimal;
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -16,6 +16,16 @@ public class Cartao {
     private int numeroCartao;
     private int senha;
     private boolean ativo;
+    private double faturaAtual;
+    private BigDecimal limiteCredito;
+
+    public double getLimiteCredito() {
+        return limiteCredito;
+    }
+
+    public void setLimiteCredito(BigDecimal limiteCredito) {
+        this.limiteCredito = limiteCredito;
+    }
 
     @Enumerated(EnumType.STRING)
     private StatusCartao status;
@@ -75,13 +85,23 @@ public class Cartao {
         this.conta = conta;
     }
 
-    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta) {
+    public double getFaturaAtual(){
+        return faturaAtual;
+    }
+
+    public void setFaturaAtual(double faturaAtual){
+        this.faturaAtual = faturaAtual;
+    }
+
+    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, BigDecimal limiteCredito) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;
         this.ativo = ativo;
         this.status = status;
         this.tipo = tipo;
         this.conta = conta;
+        this.faturaAtual = faturaAtual;
+        this.limiteCredito = limiteCredito;
     }
 
 }

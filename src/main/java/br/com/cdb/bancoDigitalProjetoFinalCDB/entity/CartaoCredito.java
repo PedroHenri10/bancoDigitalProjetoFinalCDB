@@ -2,7 +2,6 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.entity;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
 import jakarta.persistence.*;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 
