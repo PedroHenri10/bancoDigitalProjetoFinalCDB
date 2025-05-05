@@ -13,8 +13,8 @@ public class CartaoDebito extends Cartao{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int limiteDiario;
 
-    public CartaoDebito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, int limiteDiario) {
-        super(numeroCartao, senha, ativo, status, tipo);
+    public CartaoDebito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, int limiteDiario) {
+        super(numeroCartao, senha, ativo, status, tipo, conta, faturaAtual);
         this.limiteDiario = limiteDiario;
     }
 

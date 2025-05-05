@@ -17,15 +17,6 @@ public class Cartao {
     private int senha;
     private boolean ativo;
     private double faturaAtual;
-    private BigDecimal limiteCredito;
-
-    public double getLimiteCredito() {
-        return limiteCredito;
-    }
-
-    public void setLimiteCredito(BigDecimal limiteCredito) {
-        this.limiteCredito = limiteCredito;
-    }
 
     @Enumerated(EnumType.STRING)
     private StatusCartao status;
@@ -93,7 +84,7 @@ public class Cartao {
         this.faturaAtual = faturaAtual;
     }
 
-    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, BigDecimal limiteCredito) {
+    public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;
         this.ativo = ativo;
@@ -101,7 +92,6 @@ public class Cartao {
         this.tipo = tipo;
         this.conta = conta;
         this.faturaAtual = faturaAtual;
-        this.limiteCredito = limiteCredito;
     }
 
 }

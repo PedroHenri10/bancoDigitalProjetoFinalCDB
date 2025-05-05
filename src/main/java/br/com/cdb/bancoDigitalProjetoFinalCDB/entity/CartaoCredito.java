@@ -5,13 +5,15 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
 import jakarta.persistence.*;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 
+import java.math.BigDecimal;
+
 @Entity
 @Table(name = "cartaoCredito")
 public class CartaoCredito extends Cartao{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private double LimiteCredito;
+    private BigDecimal LimiteCredito;
     private double gastosMensais;
     private double taxaUtilizacao;
     private TiposSeguro seguro;
@@ -27,11 +29,11 @@ public class CartaoCredito extends Cartao{
         this.seguros = seguros;
     }
 
-    public double getLimiteCredito() {
+    public BigDecimal getLimiteCredito() {
         return LimiteCredito;
     }
 
-    public void setLimiteCredito(double limiteCredito) {
+    public void setLimiteCredito(BigDecimal limiteCredito) {
         LimiteCredito = limiteCredito;
     }
 
@@ -59,8 +61,8 @@ public class CartaoCredito extends Cartao{
         this.seguro = seguro;
     }
 
-    public CartaoCredito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, double limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro seguro, Seguro seguros) {
-        super(numeroCartao, senha, ativo, status, tipo);
+    public CartaoCredito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro seguro, Seguro seguros) {
+        super(numeroCartao, senha, ativo, status, tipo, conta, faturaAtual);
         LimiteCredito = limiteCredito;
         this.gastosMensais = gastosMensais;
         this.taxaUtilizacao = taxaUtilizacao;
