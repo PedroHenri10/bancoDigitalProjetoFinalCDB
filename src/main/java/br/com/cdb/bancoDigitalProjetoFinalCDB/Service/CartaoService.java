@@ -1,4 +1,4 @@
-package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
+package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
@@ -21,7 +21,6 @@ import java.util.UUID;
 
 import static br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao.CREDITO;
 import static br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao.DEBITO;
-import static br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente.*;
 
 @Service
 public class CartaoService {
@@ -32,7 +31,7 @@ public class CartaoService {
     @Autowired
     private SeguroRepository seguroRepository;
 
-    public Cartao criarCartaoDebito(Cartao cartao){
+    public Cartao criarCartaoDebito(CartaoCredito cartao){
         validarSenha(cartao.getSenha());
 
         boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), DEBITO);
@@ -43,22 +42,75 @@ public class CartaoService {
         return cartaoRepository.save(cartao);
     }
 
-    public Cartao criarCartaoCredito(Cartao cartao){
+    public CartaoCredito criarCartaoCredito(CartaoCredito cartao) {
         validarSenha(cartao.getSenha());
 
-        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), CREDITO);
-        if (existe) throw new OperacaoNaoPermitidaException("Cartão de credito ja existe para esta conta");
+        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), TipoCartao.CREDITO);
+        if (existe) throw new OperacaoNaoPermitidaException("Cartão de crédito já existe para esta conta.");
 
         cartao.setTipo(TipoCartao.CREDITO);
         cartao.setStatus(StatusCartao.ATIVO);
         cartao.setFaturaAtual(0.0);
+        cartao.setLimiteCredito(definirLimiteInicial(cartao.getConta().getCliente().getTipoCliente()));
 
-        Cliente cliente = cartao.getConta().getCliente();
-        cartao.setLimiteCredito(definirLimiteInicial(cliente.getTipoCliente()));
-
-        Cartao salvo = cartaoRepository.save(cartao);
+        CartaoCredito salvo = cartaoRepository.save(cartao);
         criarSeguroFraudeAutomatico(salvo);
         return salvo;
+    }
+
+    public CartaoCredito adicionarGasto(Long id, double valor) {
+        CartaoCredito cartao = (CartaoCredito) buscarCartaoPorId(id);
+        if (!cartao.getStatus().equals(StatusCartao.ATIVO)) throw new OperacaoNaoPermitidaException("Cartão inativo.");
+        if (cartao.getFaturaAtual() + valor > cartao.getLimiteCredito().doubleValue()) throw new OperacaoNaoPermitidaException("Limite excedido.");
+        cartao.setFaturaAtual(cartao.getFaturaAtual() + valor);
+        cartao.setGastosMensais(cartao.getGastosMensais() + valor);
+        return cartaoRepository.save(cartao);
+    }
+
+    public CartaoCredito realizarPagamentoFatura(Long id) {
+        CartaoCredito cartao = (CartaoCredito) buscarCartaoPorId(id);
+        Conta conta = cartao.getConta();
+        if (conta.getSaldo() < cartao.getFaturaAtual()) throw new SaldoInsuficienteException("Saldo insuficiente.");
+        conta.setSaldo(conta.getSaldo() - cartao.getFaturaAtual());
+        cartao.setFaturaAtual(0.0);
+        cartao.setGastosMensais(0.0);
+        return cartaoRepository.save(cartao);
+    }
+
+    //fechar fatuura
+
+    public CartaoCredito ajustarLimiteCredito(Long id, BigDecimal novoLimite) {
+        CartaoCredito cartao = (CartaoCredito) buscarCartaoPorId(id);
+        cartao.setLimiteCredito(novoLimite);
+        return cartaoRepository.save(cartao);
+    }
+
+    /*public Cartao criarCartaoDebito(Cartao cartao) {
+        validarSenha(cartao.getSenha());
+        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), TipoCartao.DEBITO);
+        if (existe) throw new OperacaoNaoPermitidaException("Cartão de débito já existe para esta conta.");
+        cartao.setTipo(TipoCartao.DEBITO);
+        cartao.setStatus(StatusCartao.ATIVO);
+        return cartaoRepository.save(cartao);
+    }*/
+
+    public Cartao alterarSenha(Long id, int novaSenha) {
+        validarSenha(novaSenha);
+        Cartao cartao = buscarCartaoPorId(id);
+        cartao.setSenha(novaSenha);
+        return cartaoRepository.save(cartao);
+    }
+
+    public Cartao buscarCartaoPorId(Long id) {
+        return cartaoRepository.findById(id).orElseThrow(() -> new CartaoNaoEncontradoException("Cartão não encontrado."));
+    }
+
+    public List<Cartao> listarCartoesPorCliente(Long clienteId) {
+        return cartaoRepository.findByClienteId(clienteId);
+    }
+
+    public List<Cartao> listarCartoesPorConta(Long contaId) {
+        return cartaoRepository.findByContaId(contaId);
     }
 
     public Cartao ativarCartao(Long id){

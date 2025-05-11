@@ -84,6 +84,8 @@ public class Cartao {
         this.faturaAtual = faturaAtual;
     }
 
+    public Cartao() {}
+
     public Cartao(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;

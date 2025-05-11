@@ -9,16 +9,17 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "cartaoCredito")
+@PrimaryKeyJoinColumn(name = "numero_cartao")
 public class CartaoCredito extends Cartao{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private BigDecimal LimiteCredito;
+    private BigDecimal limiteCredito;
     private double gastosMensais;
     private double taxaUtilizacao;
     private TiposSeguro seguro;
 
-    @OneToOne(mappedBy = "cartao", cascade = CascadeType.ALL)
+    @OneToOne(mappedBy = "cartaoCredito", cascade = CascadeType.ALL)
     private Seguro seguros;
 
     public Seguro getSeguros() {
@@ -30,11 +31,11 @@ public class CartaoCredito extends Cartao{
     }
 
     public BigDecimal getLimiteCredito() {
-        return LimiteCredito;
+        return limiteCredito;
     }
 
     public void setLimiteCredito(BigDecimal limiteCredito) {
-        LimiteCredito = limiteCredito;
+        this.limiteCredito = limiteCredito;
     }
 
     public double getGastosMensais() {
@@ -61,9 +62,13 @@ public class CartaoCredito extends Cartao{
         this.seguro = seguro;
     }
 
+    public CartaoCredito(){
+        super();
+    }
+
     public CartaoCredito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro seguro, Seguro seguros) {
         super(numeroCartao, senha, ativo, status, tipo, conta, faturaAtual);
-        LimiteCredito = limiteCredito;
+        this.limiteCredito = limiteCredito;
         this.gastosMensais = gastosMensais;
         this.taxaUtilizacao = taxaUtilizacao;
         this.seguro = seguro;
