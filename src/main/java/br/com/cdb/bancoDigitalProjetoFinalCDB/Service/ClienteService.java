@@ -1,3 +1,22 @@
+package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
+
+import java.time.LocalDate;
+import java.time.Period;
+import java.util.List;
+import java.util.regex.Pattern;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cliente;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.ClienteNaoEncontradoException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.CpfInvalidoException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.CpfJaCadastradoException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.IdadeInvalidaException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.OperacaoNaoPermitidaException;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.ClienteRepository;
+
 @Service
 public class ClienteService {
 
@@ -11,10 +30,10 @@ public class ClienteService {
         validarEndereco(cliente.getRua(), cliente.getNumero(), cliente.getCep());
 
         if (clienteRepository.existsByCpf(cliente.getCpf())) {
-            throw new DadosInvalidosException("CPF já cadastrado.");
+            throw new CpfJaCadastradoException("CPF já cadastrado.");
         }
 
-        cliente.setTipoCliente(TipoCliente.COMUM); // categoria inicial
+        cliente.setTipoCliente(TipoCliente.COMUM);
         return clienteRepository.save(cliente);
     }
 
@@ -77,35 +96,35 @@ public class ClienteService {
 
     public void validarCpf(String cpf) {
         if (cpf == null || !Pattern.matches("\\d{11}", cpf) || !validarCPFAlgoritmo(cpf)) {
-            throw new DadosInvalidosException("CPF inválido.");
+            throw new CpfInvalidoException("CPF inválido.");
         }
     }
 
     public void validarNome(String nome) {
         if (nome == null || nome.length() < 2 || nome.length() > 100 || !nome.matches("[A-Za-zÀ-ÿ ]+")) {
-            throw new DadosInvalidosException("Nome inválido. Apenas letras e espaços (2 a 100 caracteres).");
+            throw new OperacaoNaoPermitidaException("Nome inválido. Apenas letras e espaços (2 a 100 caracteres).");
         }
     }
 
     public void validarIdade(LocalDate dataNascimento) {
         if (dataNascimento == null) {
-            throw new DadosInvalidosException("Data de nascimento não informada.");
+            throw new IdadeInvalidaException("Data de nascimento não informada.");
         }
         int idade = Period.between(dataNascimento, LocalDate.now()).getYears();
         if (idade < 18) {
-            throw new DadosInvalidosException("Cliente deve ter pelo menos 18 anos.");
+            throw new IdadeInvalidaException("Cliente deve ter pelo menos 18 anos.");
         }
     }
 
     public void validarEndereco(String rua, int numero, String cep) {
         if (rua == null || rua.isBlank()) {
-            throw new DadosInvalidosException("Rua não pode ser vazia.");
+            throw new OperacaoNaoPermitidaException("Rua não pode ser vazia.");
         }
         if (numero <= 0) {
-            throw new DadosInvalidosException("Número inválido.");
+            throw new OperacaoNaoPermitidaException("Número inválido.");
         }
         if (!Pattern.matches("\\d{5}-\\d{3}", cep)) {
-            throw new DadosInvalidosException("CEP inválido. Formato esperado: 00000-000.");
+            throw new OperacaoNaoPermitidaException("CEP inválido. Formato esperado: 00000-000.");
         }
     }
 
