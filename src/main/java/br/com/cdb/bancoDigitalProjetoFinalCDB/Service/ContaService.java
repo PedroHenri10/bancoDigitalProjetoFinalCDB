@@ -40,6 +40,11 @@ public class ContaService {
         return contaRepository.save(conta);
     }
 
+    public Conta buscarContaPorId(Long id) {
+        return contaRepository.findById(id)
+                .orElseThrow(() -> new DadosInvalidosException("Conta com ID " + id + " não encontrada."));
+    }
+
     public List<Conta> listarTodasContas() {
         return contaRepository.findAll();
     }
@@ -48,10 +53,74 @@ public class ContaService {
         return buscarContaPorId(id);
     }
 
+    public void removerConta(Long id) {
+        Conta conta = buscarContaPorId(id);
+        if (conta.getSaldo() > 0) {
+            throw new OperacaoNaoPermitidaException("Conta possui saldo e não pode ser removida.");
+        }
+        contaRepository.delete(conta);
+    }
+
+    public void realizarTransferencia(Long origemId, Long destinoId, BigDecimal valor) {
+        Conta origem = buscarContaPorId(origemId);
+        Conta destino = buscarContaPorId(destinoId);
+
+        if (origem.getSaldo() < valor.doubleValue()) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para transferência.");
+        }
+
+        origem.setSaldo(origem.getSaldo() - valor.doubleValue());
+        destino.setSaldo(destino.getSaldo() + valor.doubleValue());
+
+        Transferencia transferencia = new Transferencia(valor, "Transferência PIX",
+                TipoTransferencia.PIX, origem, destino);
+        transferencia.setStatus(StatusTransferencia.CONCLUIDA);
+
+        transferenciaRepository.save(transferencia);
+        contaRepository.save(origem);
+        contaRepository.save(destino);
+    }
+
     public double consultarSaldo(Long contaId) {
         return buscarContaPorId(contaId).getSaldo();
     }
 
+    public void realizarDeposito(Long contaId, double valor) {
+        Conta conta = buscarContaPorId(contaId);
+        conta.setSaldo(conta.getSaldo() + valor);
+        atualizarCategoriaCliente(conta.getCliente());
+        contaRepository.save(conta);
+    }
+
+    public void realizarSaque(Long contaId, double valor) {
+        Conta conta = buscarContaPorId(contaId);
+        if (conta.getSaldo() < valor) {
+            throw new SaldoInsuficienteException("Saldo insuficiente para saque.");
+        }
+        conta.setSaldo(conta.getSaldo() - valor);
+        contaRepository.save(conta);
+    }
+
+    public void aplicarTaxaManutencaoMensal(Long contaId) {
+        Conta conta = buscarContaPorId(contaId);
+        if (conta instanceof ContaCorrente cc) {
+            double taxa = cc.getTaxaManutencaoMensal();
+            if (conta.getSaldo() < taxa) {
+                throw new SaldoInsuficienteException("Saldo insuficiente para aplicar taxa de manutenção.");
+            }
+            conta.setSaldo(conta.getSaldo() - taxa);
+            contaRepository.save(conta);
+        }
+    }
+
+    public void aplicarRendimento(Long contaId) {
+        Conta conta = buscarContaPorId(contaId);
+        if (conta instanceof ContaPoupanca cp) {
+            double rendimento = conta.getSaldo() * (cp.getTaxaRendimentoAnual() / 100.0);
+            conta.setSaldo(conta.getSaldo() + rendimento);
+            contaRepository.save(conta);
+        }
+    }
 
     public boolean contaExiste(Long contaId) {
         return contaRepository.existsById(contaId);
@@ -61,6 +130,22 @@ public class ContaService {
         return clienteRepository.existsById(clienteId);
     }
 
+    public void atualizarCategoriaCliente(Cliente cliente) {
+        double saldoTotal = cliente.getContas()
+                .stream()
+                .mapToDouble(Conta::getSaldo)
+                .sum();
+
+        if (saldoTotal >= 10000) {
+            cliente.setTipoCliente(TipoCliente.PREMIUM);
+        } else if (saldoTotal >= 5000) {
+            cliente.setTipoCliente(TipoCliente.SUPER);
+        } else {
+            cliente.setTipoCliente(TipoCliente.COMUM);
+        }
+
+        clienteRepository.save(cliente);
+    }
 
     public boolean verificarTipoConta(Long contaId, Class<?> tipoClasse) {
         Conta conta = buscarContaPorId(contaId);
