@@ -22,6 +22,14 @@ public class Conta {
     @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
     private List<Cartao> cartoes;
 
+     public List<Cartao> getCartoes() {
+        return cartoes;
+    }
+
+    public void setCartoes(List<Cartao> cartoes) {
+        this.cartoes = cartoes;
+    }
+
     public long getNumeroConta() {
         return numeroConta;
     }
