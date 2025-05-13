@@ -9,7 +9,5 @@ import java.util.List;
 @Repository
 public interface TransferenciaRepository extends JpaRepository<Transferencia, Long> {
 
-    List<Transferencia> findByContaOrigemId(Long contaId);
-
-    List<Transferencia> findByContaDestinoId(Long contaId);
+       List<Transferencia> findByContaOrigem_NumeroContaOrContaDestino_NumeroConta(Long contaOrigem, Long contaDestino);
 }
