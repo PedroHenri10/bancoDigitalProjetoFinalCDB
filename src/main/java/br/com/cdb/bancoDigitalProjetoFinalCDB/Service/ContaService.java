@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -87,6 +88,7 @@ public class ContaService {
 
     public void realizarDeposito(Long contaId, double valor) {
         Conta conta = buscarContaPorId(contaId);
+        if (valor <= 0) throw new DadosInvalidosException("Valor de depósito deve ser positivo.");
         conta.setSaldo(conta.getSaldo() + valor);
         atualizarCategoriaCliente(conta.getCliente());
         contaRepository.save(conta);
@@ -94,6 +96,7 @@ public class ContaService {
 
     public void realizarSaque(Long contaId, double valor) {
         Conta conta = buscarContaPorId(contaId);
+        if (valor <= 0) throw new DadosInvalidosException("Valor de saque deve ser positivo.");
         if (conta.getSaldo() < valor) {
             throw new SaldoInsuficienteException("Saldo insuficiente para saque.");
         }
@@ -103,21 +106,38 @@ public class ContaService {
 
     public void aplicarTaxaManutencaoMensal(Long contaId) {
         Conta conta = buscarContaPorId(contaId);
-        if (conta instanceof ContaCorrente cc) {
-            double taxa = cc.getTaxaManutencaoMensal();
-            if (conta.getSaldo() < taxa) {
-                throw new SaldoInsuficienteException("Saldo insuficiente para aplicar taxa de manutenção.");
-            }
+        if (conta instanceof ContaCorrente) {
+            ContaCorrente cc = (ContaCorrente) conta;
+            TipoCliente tipo = conta.getCliente().getTipoCliente();
+
+            double taxa = switch (tipo) {
+                case COMUM -> 12.0;
+                case SUPER -> 8.0;
+                case PREMIUM -> 0.0;
+            };
+
             conta.setSaldo(conta.getSaldo() - taxa);
             contaRepository.save(conta);
         }
     }
 
-    public void aplicarRendimento(Long contaId) {
+    public void aplicarRendimentoMensal(Long contaId) {
         Conta conta = buscarContaPorId(contaId);
-        if (conta instanceof ContaPoupanca cp) {
-            double rendimento = conta.getSaldo() * (cp.getTaxaRendimentoAnual() / 100.0);
-            conta.setSaldo(conta.getSaldo() + rendimento);
+        if (conta instanceof ContaPoupanca) {
+            ContaPoupanca cp = (ContaPoupanca) conta;
+            TipoCliente tipo = conta.getCliente().getTipoCliente();
+
+            double taxaAnual = switch (tipo) {
+                case COMUM -> 0.005;
+                case SUPER -> 0.007;
+                case PREMIUM -> 0.009;
+            };
+
+            double taxaMensal = Math.pow(1 + taxaAnual, 1.0 / 12.0) - 1;
+            double rendimento = conta.getSaldo() * taxaMensal;
+
+            BigDecimal novoSaldo = BigDecimal.valueOf(conta.getSaldo() + rendimento).setScale(2, RoundingMode.HALF_EVEN);
+            conta.setSaldo(novoSaldo.doubleValue());
             contaRepository.save(conta);
         }
     }
