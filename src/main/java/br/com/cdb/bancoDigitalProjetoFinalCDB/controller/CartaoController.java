@@ -2,7 +2,8 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.controller;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.service.CartaoService;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.Service.CartaoService;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoDebito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
@@ -24,7 +25,7 @@ public class CartaoController {
     }
 
     @PostMapping("/credito/{id}/gasto")
-    public ResponseEntity<String> adicionarGasto(@PathVariable Long id, @RequestParam double valor){
+    public ResponseEntity<CartaoCredito> adicionarGasto(@PathVariable Long id, @RequestParam double valor){
         return ResponseEntity.ok(cartaoService.adicionarGasto(id, valor));
     }
 
@@ -50,7 +51,7 @@ public class CartaoController {
 
     @PostMapping("/debito")
     public ResponseEntity<Cartao> criarCartaoDebito(@RequestBody Cartao cartao){
-        return ResponseEntity.ok(cartaoService.criarCartaoDebito(cartap));
+        return ResponseEntity.ok(cartaoService.criarCartaoDebito(cartao));
     }
 
     @PostMapping("/debito/{id}/pagar")
@@ -59,10 +60,38 @@ public class CartaoController {
     }
 
     @PutMapping("/debito/{id}/limite-diario")
-    public ResponseEntity<CartaoDebito> ajustarLimiteDiario(@PathVariable Long id, @RequestParam int noovoLimite){
+    public ResponseEntity<CartaoDebito> ajustarLimiteDiario(@PathVariable Long id, @RequestParam int novoLimite) {
         return ResponseEntity.ok(cartaoService.ajustarLimiteDiario(id, novoLimite));
     }
 
+    @PutMapping("/{id}/senha")
+    public ResponseEntity<Cartao> alterarSenha(@PathVariable Long id, @RequestParam int novaSenha) {
+        return ResponseEntity.ok(cartaoService.alterarSenha(id, novaSenha));
+    }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<Cartao> buscarPorId(@PathVariable Long id) {
+        return ResponseEntity.ok(cartaoService.buscarCartaoPorId(id));
+    }
+
+    @GetMapping("/cliente/{clienteId}")
+    public ResponseEntity<List<Cartao>> listarPorCliente(@PathVariable Long clienteId) {
+        return ResponseEntity.ok(cartaoService.listarCartoesPorCliente(clienteId));
+    }
+
+    @GetMapping("/conta/{contaId}")
+    public ResponseEntity<List<Cartao>> listarPorConta(@PathVariable Long contaId) {
+        return ResponseEntity.ok(cartaoService.listarCartoesPorConta(contaId));
+    }
+
+    @PutMapping("/{id}/ativar")
+    public ResponseEntity<Cartao> ativar(@PathVariable Long id) {
+        return ResponseEntity.ok(cartaoService.ativarCartao(id));
+    }
+
+    @PutMapping("/{id}/desativar")
+    public ResponseEntity<Cartao> desativar(@PathVariable Long id) {
+        return ResponseEntity.ok(cartaoService.desativarCartao(id));
+    }
 
 }
