@@ -5,6 +5,7 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.service.CartaoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -46,5 +47,22 @@ public class CartaoController {
     public ResponseEntity<CartaoCredito> ajustarLimiteCredito(@PathVariable Long id, @RequestParam BigDecimal limite){
         return ResponseEntity.ok(cartaoService.ajustarLimiteCredito(id, limite));
     }
+
+    @PostMapping("/debito")
+    public ResponseEntity<Cartao> criarCartaoDebito(@RequestBody Cartao cartao){
+        return ResponseEntity.ok(cartaoService.criarCartaoDebito(cartap));
+    }
+
+    @PostMapping("/debito/{id}/pagar")
+    public ResponseEntity<Cartao> realizarPagamentoDebito(@PathVariable Long id, @RequestParam double valor){
+        return ResponseEntity.ok(cartaoService.realizarPagamentoDebito(id, valor));
+    }
+
+    @PutMapping("/debito/{id}/limite-diario")
+    public ResponseEntity<CartaoDebito> ajustarLimiteDiario(@PathVariable Long id, @RequestParam int noovoLimite){
+        return ResponseEntity.ok(cartaoService.ajustarLimiteDiario(id, novoLimite));
+    }
+
+
 
 }
