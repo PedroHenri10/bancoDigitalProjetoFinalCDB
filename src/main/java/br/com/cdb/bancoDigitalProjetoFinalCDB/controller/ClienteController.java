@@ -1,7 +1,7 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.controller;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cliente;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.Service.ClienteService;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.service.ClienteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

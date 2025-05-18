@@ -1,4 +1,4 @@
-package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
+package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.*;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusTransferencia;

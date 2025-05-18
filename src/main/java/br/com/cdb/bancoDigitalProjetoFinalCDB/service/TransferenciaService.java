@@ -1,4 +1,4 @@
-package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
+package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Conta;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Transferencia;

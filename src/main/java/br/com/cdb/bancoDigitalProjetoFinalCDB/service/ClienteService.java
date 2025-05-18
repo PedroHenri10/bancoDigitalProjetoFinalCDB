@@ -1,4 +1,4 @@
-package br.com.cdb.bancoDigitalProjetoFinalCDB.Service;
+package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 
 import java.time.LocalDate;
 import java.time.Period;

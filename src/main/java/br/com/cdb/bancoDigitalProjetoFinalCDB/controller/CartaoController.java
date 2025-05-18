@@ -2,7 +2,7 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.controller;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.Service.CartaoService;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.service.CartaoService;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoDebito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.RequestEntity;
