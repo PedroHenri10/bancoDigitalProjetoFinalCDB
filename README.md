@@ -34,27 +34,80 @@ Este projeto é uma API REST de um sistema bancário digital desenvolvida com **
 
 ## Estrutura do Projeto
 
-bancoDigitalProjetoFinalCDB ├── src │   └── main │       ├── java │       │   └── br.com.cdb.bancoDigitalProjetoFinalCDB │       │       ├── controller │       │       ├── entity │       │       │   ├── enums │       │       ├── exception │       │       ├── repository │       │       └── service │       └── resources │           ├── application.properties │           └── ... ├── pom.xml └── README.md
+bancoDigitalProjetoFinalCDB
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── br
+│   │   │       └── com
+│   │   │           └── cdb
+│   │   │               └── bancoDigitalProjetoFinalCDB
+│   │   │                   ├── controller
+│   │   │                   ├── entity
+│   │   │                   │   └── enums
+│   │   │                   ├── exception
+│   │   │                   ├── repository
+│   │   │                   └── service
+│   │   └── resources
+│   │       ├── application.properties
+│   │       └── static / templates (se necessário)
+├── pom.xml
+└── README.md
 
 ---
 
-## Endpoints
+## Endpoints REST
 
-Veja a documentação básica de testes no Postman:
+**Clientes**
+- POST    `/clientes`                           → Cadastrar cliente  
+- GET     `/clientes`                           → Listar todos os clientes  
+- GET     `/clientes/{id}`                      → Buscar cliente por ID  
+- GET     `/clientes/nome?nome=Pedro`           → Buscar clientes por nome  
+- PUT     `/clientes/{id}`                      → Atualizar cliente  
+- DELETE  `/clientes/{id}`                      → Remover cliente  
+- GET     `/clientes/{id}/info`                 → Informações básicas  
 
-| Método | Endpoint | Descrição |
-|--------|----------|-----------|
-| POST | `/clientes` | Cadastrar cliente |
-| GET  | `/clientes` | Listar todos os clientes |
-| POST | `/contas/corrente` | Criar conta corrente |
-| POST | `/contas/poupanca` | Criar conta poupança |
-| PUT  | `/contas/{id}/depositar` | Depositar na conta |
-| PUT  | `/contas/{id}/sacar` | Sacar da conta |
-| POST | `/transferencias/pix` | Realizar transferência PIX |
-| POST | `/cartoes/credito` | Criar cartão crédito |
-| PUT  | `/cartoes/credito/{id}/gasto` | Adicionar gasto |
-| GET  | `/cartoes/credito/{id}/fatura` | Consultar fatura |
-| PUT  | `/cartoes/credito/{id}/pagar` | Pagar fatura |
+**Contas**
+- POST    `/contas/corrente`                    → Criar conta corrente  
+- POST    `/contas/poupanca`                    → Criar conta poupança  
+- GET     `/contas`                             → Listar contas  
+- GET     `/contas/{id}`                        → Detalhes da conta  
+- PUT     `/contas/{id}/depositar?valor=100`    → Depositar  
+- PUT     `/contas/{id}/sacar?valor=50`         → Sacar  
+- GET     `/contas/{id}/saldo`                  → Consultar saldo  
+- DELETE  `/contas/{id}`                        → Remover conta (saldo = 0)  
+- PUT     `/contas/{id}/taxa-manutencao`        → Aplicar taxa manutenção  
+- PUT     `/contas/{id}/rendimento`             → Aplicar rendimento mensal  
+
+**Transferências**
+- POST    `/transferencias/pix`                 → Transferência PIX  
+- GET     `/transferencias/conta/{id}`          → Transferências da conta  
+- GET     `/transferencias/{id}`                → Transferência por ID  
+
+**Cartões**
+- POST    `/cartoes/credito`                    → Criar cartão crédito  
+- POST    `/cartoes/debito`                     → Criar cartão débito  
+- GET     `/cartoes/{id}`                       → Buscar cartão  
+- GET     `/cartoes/cliente/{clienteId}`        → Cartões por cliente  
+- GET     `/cartoes/conta/{contaId}`            → Cartões por conta  
+- PUT     `/cartoes/{id}/ativar`                → Ativar cartão  
+- PUT     `/cartoes/{id}/desativar`             → Desativar cartão  
+- PUT     `/cartoes/{id}/senha`                 → Alterar senha  
+- PUT     `/cartoes/credito/{id}/gasto?valor=100`   → Adicionar gasto  
+- GET     `/cartoes/credito/{id}/fatura`        → Consultar fatura  
+- PUT     `/cartoes/credito/{id}/pagar`         → Pagar fatura  
+- PUT     `/cartoes/credito/{id}/fechar`        → Fechar fatura com taxa  
+- PUT     `/cartoes/credito/{id}/limite?valor=3000` → Ajustar limite crédito  
+- PUT     `/cartoes/debito/{id}/pagamento?valor=50` → Pagar com débito  
+- PUT     `/cartoes/debito/{id}/limite-diario?valor=500` → Ajustar limite diário  
+
+**Seguros**
+- POST    `/seguros/viagem/{idCartao}`          → Contratar seguro viagem  
+- POST    `/seguros/fraude/{idCartao}`          → Contratar seguro contra fraude  
+- GET     `/seguros/{id}`                       → Buscar seguro por ID  
+- DELETE  `/seguros/{id}`                       → Cancelar seguro (exceto fraude)  
+- GET     `/seguros/cliente/{clienteId}`        → Listar seguros do cliente  
+
 
 ---
 
