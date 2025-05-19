@@ -34,25 +34,26 @@ Este projeto é uma API REST de um sistema bancário digital desenvolvida com **
 
 ## Estrutura do Projeto
 
-bancoDigitalProjetoFinalCDB
-├── src
-│   ├── main
-│   │   ├── java
-│   │   │   └── br
-│   │   │       └── com
-│   │   │           └── cdb
-│   │   │               └── bancoDigitalProjetoFinalCDB
-│   │   │                   ├── controller
-│   │   │                   ├── entity
-│   │   │                   │   └── enums
-│   │   │                   ├── exception
-│   │   │                   ├── repository
-│   │   │                   └── service
-│   │   └── resources
-│   │       ├── application.properties
-│   │       └── static / templates (se necessário)
-├── pom.xml
-└── README.md
+banco-digital-projeto-final-cdb
+┣ 📂 src
+┃ ┣ 📂 main
+┃ ┃ ┣ 📂 java
+┃ ┃ ┃ ┗ 📂 br
+┃ ┃ ┃ ┃ ┗ 📂 com
+┃ ┃ ┃ ┃ ┃ ┗ 📂 cdb
+┃ ┃ ┃ ┃ ┃ ┃ ┗ 📂 bancoDigitalProjetoFinalCDB
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 controller     # Classes REST para exposição dos endpoints da API
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 entity         # Entidades JPA que representam as tabelas (Cliente, Conta, Cartão etc.)
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 entity.enums   # Enumerações como TipoCliente, TipoCartao, etc.
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 exception      # Exceções personalizadas lançadas pelas regras de negócio
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 repository     # Interfaces JPA para acesso ao banco de dados
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┣ 📂 service        # Camada de regras de negócio (ClienteService, ContaService, etc.)
+┃ ┃ ┃ ┃ ┃ ┃ ┃ ┗ 📄 BancoDigitalProjetoFinalCdbApplication.java # Classe principal (main)
+┃ ┃ ┗ 📂 resources
+┃ ┃ ┃ ┣ 📄 application.properties  # Configurações do banco de dados (MySQL), porta, JPA etc.
+┃ ┃ ┃ ┗ 📂 static / templates      # (Opcional) arquivos HTML, JS ou CSS se necessário
+┣ 📄 pom.xml                       # Arquivo de configuração do Maven com dependências
+┣ 📄 README.md                     # Documentação do projeto
 
 ---
 
@@ -156,3 +157,8 @@ spring.datasource.password=SUA_SENHA
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+---
+
+## Autor
+💻 Pedro Henrique Nunes | linkedin: https://www.linkedin.com/in/p-henrique-nunes | email: dinhonoliver@gmail.com
