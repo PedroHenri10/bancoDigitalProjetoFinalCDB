@@ -10,7 +10,6 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "cartaoDebito")
 public class CartaoDebito extends Cartao{
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int limiteDiario;
 
     public CartaoDebito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, int limiteDiario) {
