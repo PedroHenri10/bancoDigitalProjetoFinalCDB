@@ -12,22 +12,20 @@ import java.math.BigDecimal;
 @PrimaryKeyJoinColumn(name = "numero_cartao")
 public class CartaoCredito extends Cartao{
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private BigDecimal limiteCredito;
     private double gastosMensais;
     private double taxaUtilizacao;
-    private TiposSeguro seguro;
+    private TiposSeguro tipoSeguro;
 
     @OneToOne(mappedBy = "cartaoCredito", cascade = CascadeType.ALL)
-    private Seguro seguros;
+    private Seguro seguro;
 
     public Seguro getSeguros() {
-        return seguros;
+        return seguro;
     }
 
-    public void setSeguros(Seguro seguros) {
-        this.seguros = seguros;
+    public void setSeguros(Seguro seguro) {
+        this.seguro = seguro;
     }
 
     public BigDecimal getLimiteCredito() {
@@ -55,23 +53,22 @@ public class CartaoCredito extends Cartao{
     }
 
     public TiposSeguro getSeguro() {
-        return seguro;
+        return tipoSeguro;
     }
 
     public void setSeguro(TiposSeguro seguro) {
-        this.seguro = seguro;
+        this.tipoSeguro = tipoSeguro;
     }
 
     public CartaoCredito(){
-        super();
     }
 
-    public CartaoCredito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro seguro, Seguro seguros) {
-        super(numeroCartao, senha, ativo, status, tipo, conta, faturaAtual);
+    public CartaoCredito(Long numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro tipoSeguro, Seguro seguro) {
+        super(numeroCartao, senha, ativo, status, tipo, conta, cliente, faturaAtual);
         this.limiteCredito = limiteCredito;
         this.gastosMensais = gastosMensais;
         this.taxaUtilizacao = taxaUtilizacao;
+        this.tipoSeguro = tipoSeguro;
         this.seguro = seguro;
-        this.seguros = seguros;
     }
 }
