@@ -4,9 +4,8 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "contaPoupanca")
+@PrimaryKeyJoinColumn(name = "numero_conta")
 public class ContaPoupanca extends Conta{
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private double taxaRendimentoAnual;
 
     public double getTaxaRendimentoAnual() {
@@ -17,6 +16,9 @@ public class ContaPoupanca extends Conta{
         this.taxaRendimentoAnual = taxaRendimentoAnual;
     }
 
+    public ContaPoupanca() {
+    }
+    
     public ContaPoupanca(long numeroConta, double saldo, Cliente cliente, double taxaRendimentoAnual) {
         super(numeroConta, saldo, cliente);
         this.taxaRendimentoAnual = taxaRendimentoAnual;
