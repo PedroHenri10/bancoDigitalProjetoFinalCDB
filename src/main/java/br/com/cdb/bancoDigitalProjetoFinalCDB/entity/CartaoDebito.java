@@ -5,15 +5,20 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.PrimaryKeyJoinColumn;
 import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "cartaoDebito")
+@PrimaryKeyJoinColumn(name = "numero_cartao")
 public class CartaoDebito extends Cartao{
     private int limiteDiario;
+    
+    public CartaoDebito() {
+    }
 
-    public CartaoDebito(int numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, double faturaAtual, int limiteDiario) {
-        super(numeroCartao, senha, ativo, status, tipo, conta, faturaAtual);
+    public CartaoDebito(Long numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual, int limiteDiario) {
+        super(numeroCartao, senha, ativo, status, tipo, conta, cliente, faturaAtual);
         this.limiteDiario = limiteDiario;
     }
 
