@@ -24,7 +24,6 @@ public class Cliente {
     @Enumerated(EnumType.STRING)
     private TipoCliente tipoCliente;
 
-    DateTimeFormatter formatter = DateTimeFormatter .ofPattern("dd/MM/yyyy");
     private LocalDate dataNasc;
     private String rua;
     private int numero;
@@ -36,6 +35,9 @@ public class Cliente {
 
     @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Conta> contas;
+    
+    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Cartao> cartoes;
 
     public Long getId() {
         return id;
@@ -51,10 +53,6 @@ public class Cliente {
 
     public TipoCliente getTipoCliente() {
         return tipoCliente;
-    }
-
-    public DateTimeFormatter getFormatter() {
-        return formatter;
     }
 
     public LocalDate getDataNasc() {
@@ -88,6 +86,14 @@ public class Cliente {
     public List<Conta> getContas() {
         return contas;
     }
+    
+    public List<Cartao> getCartoes() {
+        return cartoes;
+    }
+
+    public void setCartoes(List<Cartao> cartoes) {
+        this.cartoes = cartoes;
+    }
 
     public void setId(Long id) {
         this.id = id;
@@ -103,10 +109,6 @@ public class Cliente {
 
     public void setTipoCliente(TipoCliente tipoCliente) {
         this.tipoCliente = tipoCliente;
-    }
-
-    public void setFormatter(DateTimeFormatter formatter) {
-        this.formatter = formatter;
     }
 
     public void setDataNasc(LocalDate dataNasc) {
@@ -140,13 +142,15 @@ public class Cliente {
     public void setContas(List<Conta> contas) {
         this.contas = contas;
     }
+    
+    public Cliente() {
+    }
 
-    public Cliente(Long id, String nome, String cpf, TipoCliente tipoCliente, DateTimeFormatter formatter, LocalDate dataNasc, String rua, int numero, String estado, String cidade, String cep, String senha, List<Conta> contas) {
+    public Cliente(Long id, String nome, String cpf, TipoCliente tipoCliente, LocalDate dataNasc, String rua, int numero, String estado, String cidade, String cep, String senha, List<Conta> contas, List<Cartao> cartoes) {
         this.id = id;
         this.nome = nome;
         this.cpf = cpf;
         this.tipoCliente = tipoCliente;
-        this.formatter = formatter;
         this.dataNasc = dataNasc;
         this.rua = rua;
         this.numero = numero;
@@ -155,5 +159,6 @@ public class Cliente {
         this.cep = cep;
         this.senha = senha;
         this.contas = contas;
+        this.cartoes = cartoes;
     }
 }
