@@ -36,22 +36,26 @@ Este projeto é uma API REST de um sistema bancário digital desenvolvida com **
 
 Durante o cadastro ou atualização de um cliente, as seguintes validações são aplicadas:
 
--CPF:
+- CPF:
+  
   Obrigatório
   Deve conter 11 dígitos numéricos (\\d{11})
   Validação lógica via algoritmo oficial
   Não pode conter todos os dígitos iguais
 
--Nome:
+- Nome:
+  
   Obrigatório
   Deve conter apenas letras (maiúsculas/minúsculas) e espaços
   Tamanho entre 2 e 100 caracteres
 
--Idade:
+- Idade:
+
   Obrigatório
   O cliente deve ter pelo menos 18 anos com base na data de nascimento (LocalDate)
 
--Endereço (Rua, Número, CEP):
+- Endereço (Rua, Número, CEP):
+
   Rua não pode ser vazia
   Número deve ser maior que zero
   CEP deve estar no formato válido 00000-000
