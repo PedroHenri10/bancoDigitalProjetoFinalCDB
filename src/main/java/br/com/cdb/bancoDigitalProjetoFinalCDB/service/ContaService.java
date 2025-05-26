@@ -30,17 +30,28 @@ public class ContaService {
     private TransferenciaRepository transferenciaRepository;
 
     public ContaCorrente criarContaCorrente(ContaCorrente conta) {
-        validarClienteExiste(conta.getCliente().getId());
+        Cliente cliente = clienteRepository.findById(conta.getCliente().getId())
+            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
         conta.setSaldo(0.0);
+
+        conta.setCliente(cliente);
+        cliente.getContas().add(conta);
+
         return contaRepository.save(conta);
     }
-
+    
     public ContaPoupanca criarContaPoupanca(ContaPoupanca conta) {
-        validarClienteExiste(conta.getCliente().getId());
+        Cliente cliente = clienteRepository.findById(conta.getCliente().getId())
+            .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));
+
         conta.setSaldo(0.0);
+        conta.setCliente(cliente);
+        cliente.getContas().add(conta);
+
         return contaRepository.save(conta);
     }
-
+    
     public Conta buscarContaPorId(Long id) {
         return contaRepository.findById(id)
                 .orElseThrow(() -> new DadosInvalidosException("Conta com ID " + id + " não encontrada."));
