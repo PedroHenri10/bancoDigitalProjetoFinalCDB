@@ -1,6 +1,8 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.controller;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Conta;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.ContaCorrente;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.ContaPoupanca;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.service.ContaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,13 +19,13 @@ public class ContaController {
     private ContaService contaService;
 
     @PostMapping("/corrente")
-    public ResponseEntity<Conta> criarContaCorrente(@RequestBody Conta conta) {
-        return ResponseEntity.ok(contaService.criarContaCorrente((br.com.cdb.bancoDigitalProjetoFinalCDB.entity.ContaCorrente) conta));
+    public ResponseEntity<Conta> criarContaCorrente(@RequestBody ContaCorrente conta) {
+        return ResponseEntity.ok(contaService.criarContaCorrente(conta));
     }
 
     @PostMapping("/poupanca")
-    public ResponseEntity<Conta> criarContaPoupanca(@RequestBody Conta conta) {
-        return ResponseEntity.ok(contaService.criarContaPoupanca((br.com.cdb.bancoDigitalProjetoFinalCDB.entity.ContaPoupanca) conta));
+    public ResponseEntity<Conta> criarContaPoupanca(@RequestBody ContaPoupanca conta) {
+        return ResponseEntity.ok(contaService.criarContaPoupanca(conta));
     }
 
     @GetMapping("/{id}")
