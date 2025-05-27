@@ -1,8 +1,9 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 import jakarta.persistence.*;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 @Entity
 @Table(name = "seguro")
@@ -23,7 +24,7 @@ public class Seguro {
 
     @OneToOne
     @JoinColumn(name = "cartao_credito_id")
-    @JsonManagedReference
+    @JsonIgnore
     private CartaoCredito cartaoCredito;
 
     public Long getId() {
