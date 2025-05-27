@@ -7,6 +7,9 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity
 @Table(name = "cartaoCredito")
 @PrimaryKeyJoinColumn(name = "numero_cartao")
@@ -15,16 +18,19 @@ public class CartaoCredito extends Cartao{
     private BigDecimal limiteCredito;
     private double gastosMensais;
     private double taxaUtilizacao;
-    private TiposSeguro tipoSeguro;
 
     @OneToOne(mappedBy = "cartaoCredito", cascade = CascadeType.ALL)
+    @JsonIgnore
     private Seguro seguro;
+    
+    @Enumerated(EnumType.STRING)
+    private TiposSeguro tipoSeguro;
 
-    public Seguro getSeguros() {
+    public Seguro getSeguro() {
         return seguro;
     }
 
-    public void setSeguros(Seguro seguro) {
+    public void setSeguro(Seguro seguro) {
         this.seguro = seguro;
     }
 
@@ -52,11 +58,11 @@ public class CartaoCredito extends Cartao{
         this.taxaUtilizacao = taxaUtilizacao;
     }
 
-    public TiposSeguro getSeguro() {
+    public TiposSeguro getTipoSeguro() {
         return tipoSeguro;
     }
 
-    public void setSeguro(TiposSeguro seguro) {
+    public void setTipoSeguro(TiposSeguro seguro) {
         this.tipoSeguro = tipoSeguro;
     }
 
