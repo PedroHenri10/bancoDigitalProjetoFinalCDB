@@ -9,7 +9,9 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonTypeName;
 
+@JsonTypeName("credito")
 @Entity
 @Table(name = "cartaoCredito")
 @PrimaryKeyJoinColumn(name = "numero_cartao")
@@ -69,8 +71,8 @@ public class CartaoCredito extends Cartao{
     public CartaoCredito(){
     }
 
-    public CartaoCredito(Long numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro tipoSeguro, Seguro seguro) {
-        super(numeroCartao, senha, ativo, status, tipo, conta, cliente, faturaAtual);
+    public CartaoCredito(Long numeroCartao, int senha, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual, BigDecimal limiteCredito, double gastosMensais, double taxaUtilizacao, TiposSeguro tipoSeguro, Seguro seguro) {
+        super(numeroCartao, senha, status, tipo, conta, cliente, faturaAtual);
         this.limiteCredito = limiteCredito;
         this.gastosMensais = gastosMensais;
         this.taxaUtilizacao = taxaUtilizacao;
