@@ -15,6 +15,7 @@ import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.OperacaoNaoPermitidaExce
 import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.SaldoInsuficienteException;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.CartaoRepository;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.SeguroRepository;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.ContaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
  
@@ -31,26 +32,46 @@ public class CartaoService {
  
     @Autowired
     private CartaoRepository cartaoRepository;
+
+    @Autowired
+    private ContaRepository contaRepository;
  
     @Autowired
     private SeguroRepository seguroRepository;
- 
-    public CartaoCredito criarCartaoCredito(CartaoCredito cartao) {
-        validarSenha(cartao.getSenha());
- 
-        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), TipoCartao.CREDITO);
+
+    public CartaoCredito criarCartaoCredito(CartaoCredito cartaoRequest) {
+        validarSenha(cartaoRequest.getSenha());
+
+        Long numeroConta = cartaoRequest.getConta().getNumeroConta();
+
+        // Puxa do banco a conta completa com o cliente já preenchido
+        Conta contaCompleta = contaRepository.findById(numeroConta)
+                .orElseThrow(() -> new RuntimeException("Conta com número " + numeroConta + " não encontrada."));
+
+        // Verificação obrigatória
+        if (contaCompleta.getCliente() == null) {
+            throw new IllegalStateException("A conta " + numeroConta + " não possui um cliente associado.");
+        }
+
+        // Agora sim: usa a conta correta
+        cartaoRequest.setConta(contaCompleta);
+        cartaoRequest.setCliente(contaCompleta.getCliente());
+
+        // Verifica se já existe cartão
+        boolean existe = cartaoRepository.existsByConta_NumeroContaAndTipo(contaCompleta.getNumeroConta(), CREDITO);
         if (existe) throw new OperacaoNaoPermitidaException("Cartão de crédito já existe para esta conta.");
- 
-        cartao.setTipo(TipoCartao.CREDITO);
-        cartao.setStatus(StatusCartao.ATIVO);
-        cartao.setFaturaAtual(0.0);
-        cartao.setLimiteCredito(definirLimiteInicial(cartao.getConta().getCliente().getTipoCliente()));
- 
-        CartaoCredito salvo = cartaoRepository.save(cartao);
+
+        cartaoRequest.setTipo(CREDITO);
+        cartaoRequest.setStatus(StatusCartao.INATIVO);
+        cartaoRequest.setFaturaAtual(0.0);
+        cartaoRequest.setLimiteCredito(definirLimiteInicial(contaCompleta.getCliente().getTipoCliente()));
+
+        CartaoCredito salvo = cartaoRepository.save(cartaoRequest);
         criarSeguroFraudeAutomatico(salvo);
         return salvo;
     }
-    
+
+
     public CartaoCredito adicionarGasto(Long id, double valor) {
         CartaoCredito cartao = (CartaoCredito) buscarCartaoPorId(id);
  
@@ -109,16 +130,52 @@ public class CartaoService {
         cartao.setLimiteCredito(novoLimite);
         return cartaoRepository.save(cartao);
     }
- 
-    public Cartao criarCartaoDebito(Cartao cartao) {
-        validarSenha(cartao.getSenha());
-        boolean existe = cartaoRepository.existsByContaIdAndTipoCartao(cartao.getConta().getNumeroConta(), TipoCartao.DEBITO);
-        if (existe) throw new OperacaoNaoPermitidaException("Cartão de débito já existe para esta conta.");
-        cartao.setTipo(TipoCartao.DEBITO);
-        cartao.setStatus(StatusCartao.ATIVO);
-        return cartaoRepository.save(cartao);
+
+    public CartaoDebito criarCartaoDebito(CartaoDebito cartaoRequest) {
+        validarSenha(cartaoRequest.getSenha());
+
+        Long numeroConta = cartaoRequest.getConta().getNumeroConta();
+
+        Conta contaCompleta = contaRepository.findById(numeroConta)
+                .orElseThrow(() -> new RuntimeException("Conta com número " + numeroConta + " não encontrada."));
+
+        if (contaCompleta.getCliente() == null) {
+            throw new IllegalStateException("A conta " + numeroConta + " não possui um cliente associado.");
+        }
+
+        boolean existe = cartaoRepository.existsByConta_NumeroContaAndTipo(contaCompleta.getNumeroConta(), DEBITO);
+        if (existe) {
+            throw new OperacaoNaoPermitidaException("Cartão de débito já existe para esta conta.");
+        }
+
+        cartaoRequest.setConta(contaCompleta);
+        cartaoRequest.setCliente(contaCompleta.getCliente());
+        cartaoRequest.setTipo(DEBITO);
+        cartaoRequest.setStatus(StatusCartao.INATIVO); // Você pode ativar depois se quiser
+        cartaoRequest.setFaturaAtual(0.0);
+
+        // Define o limite diário com base no tipo de cliente
+        TipoCliente tipoCliente = contaCompleta.getCliente().getTipoCliente();
+        int limiteDiario;
+        switch (tipoCliente) {
+            case COMUM:
+                limiteDiario = 1000;
+                break;
+            case SUPER:
+                limiteDiario = 5000;
+                break;
+            case PREMIUM:
+                limiteDiario = 10000;
+                break;
+            default:
+                throw new OperacaoNaoPermitidaException("Tipo de cliente inválido.");
+        }
+        cartaoRequest.setLimiteDiario(limiteDiario);
+
+        return cartaoRepository.save(cartaoRequest);
     }
-    
+
+
     public Cartao realizarPagamentoDebito(Long id, double valor) {
         Cartao cartao = buscarCartaoPorId(id);
         if (!cartao.getTipo().equals(TipoCartao.DEBITO)) {
@@ -156,8 +213,8 @@ public class CartaoService {
         return cartaoRepository.findByClienteId(clienteId);
     }
  
-    public List<Cartao> listarCartoesPorConta(Long contaId) {
-        return cartaoRepository.findByContaId(contaId);
+    public List<Cartao> listarCartoesPorConta(Conta conta) {
+        return cartaoRepository.findByConta(conta);
     }
  
     public Cartao ativarCartao(Long id){
@@ -173,7 +230,7 @@ public class CartaoService {
     }
  
     private void validarSenha(int senha){
-        if(senha < 1000  && senha > 9999){
+        if(senha < 1000  || senha > 9999){
             throw new OperacaoNaoPermitidaException("Senha inválida: mínimo 4 digitos");
         }
     }
