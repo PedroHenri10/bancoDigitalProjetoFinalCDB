@@ -6,7 +6,8 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -15,22 +16,26 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 		  include = JsonTypeInfo.As.PROPERTY,
 		  property = "tipoCartao"
 		)
-		@JsonSubTypes({
-		  @JsonSubTypes.Type(value = ContaCorrente.class, name = "credito"),
-		  @JsonSubTypes.Type(value = ContaPoupanca.class, name = "debito")
-		})
+@JsonSubTypes({
+	  @JsonSubTypes.Type(value = CartaoCredito.class, name = "credito"),
+	  @JsonSubTypes.Type(value = CartaoDebito.class, name = "debito")
+	})
 
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_cartao", discriminatorType = DiscriminatorType.STRING)
 @Table(name = "cartao")
+@JsonIdentityInfo(
+	    generator = PropertyGenerator.class,
+	    property = "numeroCartao",
+	    scope = Cartao.class
+	)
 public class Cartao {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long numeroCartao;
     private int senha;
-    private boolean ativo;
     private double faturaAtual;
 
     @Enumerated(EnumType.STRING)
@@ -41,12 +46,10 @@ public class Cartao {
 
     @ManyToOne
     @JoinColumn(name = "numero_conta")
-    @JsonBackReference(value = "conta-cartoes")
     private Conta conta;
     
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference(value = "cliente-cartoes")
     private Cliente cliente;
 
     public Long getNumeroCartao() {
@@ -63,14 +66,6 @@ public class Cartao {
 
     public void setSenha(int senha) {
         this.senha = senha;
-    }
-
-    public boolean isAtivo() {
-        return ativo;
-    }
-
-    public void setAtivo(boolean ativo) {
-        this.ativo = ativo;
     }
 
     public StatusCartao getStatus() {
@@ -115,10 +110,9 @@ public class Cartao {
 
     public Cartao() {}
 
-    public Cartao(Long numeroCartao, int senha, boolean ativo, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual) {
+    public Cartao(Long numeroCartao, int senha, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual) {
         this.numeroCartao = numeroCartao;
         this.senha = senha;
-        this.ativo = ativo;
         this.status = status;
         this.tipo = tipo;
         this.conta = conta;
@@ -127,4 +121,3 @@ public class Cartao {
     }
 
 }
-
