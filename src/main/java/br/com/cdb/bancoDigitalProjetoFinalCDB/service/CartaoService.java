@@ -44,20 +44,16 @@ public class CartaoService {
 
         Long numeroConta = cartaoRequest.getConta().getNumeroConta();
 
-        // Puxa do banco a conta completa com o cliente já preenchido
         Conta contaCompleta = contaRepository.findById(numeroConta)
                 .orElseThrow(() -> new RuntimeException("Conta com número " + numeroConta + " não encontrada."));
 
-        // Verificação obrigatória
         if (contaCompleta.getCliente() == null) {
             throw new IllegalStateException("A conta " + numeroConta + " não possui um cliente associado.");
         }
 
-        // Agora sim: usa a conta correta
         cartaoRequest.setConta(contaCompleta);
         cartaoRequest.setCliente(contaCompleta.getCliente());
 
-        // Verifica se já existe cartão
         boolean existe = cartaoRepository.existsByConta_NumeroContaAndTipo(contaCompleta.getNumeroConta(), CREDITO);
         if (existe) throw new OperacaoNaoPermitidaException("Cartão de crédito já existe para esta conta.");
 
@@ -151,10 +147,9 @@ public class CartaoService {
         cartaoRequest.setConta(contaCompleta);
         cartaoRequest.setCliente(contaCompleta.getCliente());
         cartaoRequest.setTipo(DEBITO);
-        cartaoRequest.setStatus(StatusCartao.INATIVO); // Você pode ativar depois se quiser
+        cartaoRequest.setStatus(StatusCartao.INATIVO);
         cartaoRequest.setFaturaAtual(0.0);
 
-        // Define o limite diário com base no tipo de cliente
         TipoCliente tipoCliente = contaCompleta.getCliente().getTipoCliente();
         int limiteDiario;
         switch (tipoCliente) {
