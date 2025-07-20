@@ -173,20 +173,38 @@ public class CartaoService {
 
     public Cartao realizarPagamentoDebito(Long id, double valor) {
         Cartao cartao = buscarCartaoPorId(id);
+
         if (!cartao.getTipo().equals(TipoCartao.DEBITO)) {
             throw new OperacaoNaoPermitidaException("Cartão não é do tipo débito.");
         }
-        if (valor > ((CartaoDebito) cartao).getLimiteDiario()) {
+
+        CartaoDebito cartaoDebito = (CartaoDebito) cartao;
+        Conta conta = cartaoDebito.getConta();
+
+        if (cartaoDebito.getDataUltimoGasto() == null ||
+                !cartaoDebito.getDataUltimoGasto().isEqual(LocalDate.now())) {
+            cartaoDebito.setValorGastoHoje(0.0);
+            cartaoDebito.setDataUltimoGasto(LocalDate.now());
+        }
+
+        double totalGastoHoje = cartaoDebito.getValorGastoHoje();
+
+        if ((totalGastoHoje + valor) > cartaoDebito.getLimiteDiario()) {
             throw new OperacaoNaoPermitidaException("Valor excede o limite diário do cartão.");
         }
-        Conta conta = cartao.getConta();
+
         if (conta.getSaldo() < valor) {
             throw new SaldoInsuficienteException("Saldo insuficiente.");
         }
+
         conta.setSaldo(conta.getSaldo() - valor);
-        return cartaoRepository.save(cartao);
+        cartaoDebito.setValorGastoHoje(totalGastoHoje + valor);
+        cartaoDebito.setDataUltimoGasto(LocalDate.now());
+
+        return cartaoRepository.save(cartaoDebito);
     }
-    
+
+
     public CartaoDebito ajustarLimiteDiario(Long id, int novoLimite) {
         CartaoDebito cartao = (CartaoDebito) buscarCartaoPorId(id);
         cartao.setLimiteDiario(novoLimite);
