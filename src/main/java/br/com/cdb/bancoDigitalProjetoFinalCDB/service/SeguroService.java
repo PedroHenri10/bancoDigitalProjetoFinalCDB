@@ -68,7 +68,7 @@ public class SeguroService {
     }
 
     private CartaoCredito buscarEValidarCartaoCredito(Long cartaoId) {
-        Cartao cartao = cartaoRepository.findById(cartaoId)
+        Cartao cartao = cartaoRepository.findByIdDistinct(cartaoId)
                 .orElseThrow(() -> new CartaoNaoEncontradoException("Cartão com ID " + cartaoId + " não encontrado."));
 
         if (!(cartao instanceof CartaoCredito)) {
@@ -100,7 +100,7 @@ public class SeguroService {
     }
 
     public List<Seguro> listarSegurosPorCliente(Long clienteId) {
-        List<Cartao> cartoesDoCliente = cartaoRepository.findByClienteId(clienteId);
+        List<Cartao> cartoesDoCliente = cartaoRepository.findByClienteIdDistinct(clienteId);
 
         List<CartaoCredito> cartoesCredito = cartoesDoCliente.stream()
                 .filter(CartaoCredito.class::isInstance)
@@ -111,6 +111,6 @@ public class SeguroService {
             return List.of();
         }
 
-        return seguroRepository.findByCartaoCreditoIn(cartoesCredito);
+        return seguroRepository.findByCartaoCreditoInDistinct(cartoesCredito);
     }
 }
