@@ -3,9 +3,9 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
-import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TiposSeguro;
+import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.CartaoNaoEncontradoException;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.OperacaoNaoPermitidaException;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.exception.SeguroNaoEncontradoException;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.repository.CartaoRepository;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class SeguroService {
@@ -26,59 +27,34 @@ public class SeguroService {
     @Autowired
     private CartaoRepository cartaoRepository;
 
-    public Seguro contratarSeguroViagem(int cartaoId) {
-        Cartao cartao = cartaoRepository.findByNumeroConta(cartaoId);
+    public Seguro contratarSeguroViagem(Long cartaoId) {
+        CartaoCredito cartaoCredito = buscarEValidarCartaoCredito(cartaoId);
 
-        if (cartao == null) {
-            throw new OperacaoNaoPermitidaException("Cartão não encontrado.");
-        }
-
-        if (!(cartao instanceof CartaoCredito credito)) {
-            throw new OperacaoNaoPermitidaException("Seguro viagem disponível apenas para cartões de crédito.");
-        }
-
-        if (cartao.getConta() == null || cartao.getConta().getCliente() == null) {
-            throw new OperacaoNaoPermitidaException("Cartão sem cliente associado.");
-        }
-
-        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_VIAGEM)) {
+        if (seguroRepository.existsByCartaoCreditoAndTipo(cartaoCredito, TiposSeguro.SEGURO_VIAGEM)) {
             throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro viagem.");
         }
 
-        TipoCliente tipo = cartao.getConta().getCliente().getTipoCliente();
-        double valor = switch (tipo) {
+        TipoCliente tipoCliente = cartaoCredito.getCliente().getTipoCliente();
+        double valorSeguro = switch (tipoCliente) {
             case PREMIUM -> 0.0;
             case SUPER, COMUM -> 50.0;
         };
 
         Seguro seguro = new Seguro();
         seguro.setTipo(TiposSeguro.SEGURO_VIAGEM);
-        seguro.setValor(valor);
+        seguro.setValor(valorSeguro);
         seguro.setNumeroApolice(UUID.randomUUID().toString());
         seguro.setDataInicio(LocalDate.now().toString());
-        seguro.setCartaoCredito(credito);
+        seguro.setCartaoCredito(cartaoCredito);
 
         return seguroRepository.save(seguro);
     }
 
-    public Seguro contratarSeguroFraude(int cartaoId) {
+    public Seguro contratarSeguroFraude(Long cartaoId) {
+        CartaoCredito cartaoCredito = buscarEValidarCartaoCredito(cartaoId);
 
-        Cartao cartao = cartaoRepository.findByNumeroConta(cartaoId);
-
-        if (cartao == null) {
-            throw new OperacaoNaoPermitidaException("Cartão não encontrado.");
-        }
-
-        if (!(cartao instanceof CartaoCredito credito)) {
-            throw new OperacaoNaoPermitidaException("Seguro viagem disponível apenas para cartões de crédito.");
-        }
-
-        if (cartao.getConta() == null || cartao.getConta().getCliente() == null) {
-            throw new OperacaoNaoPermitidaException("Cartão sem cliente associado.");
-        }
-
-        if (seguroRepository.existsByCartaoCreditoAndTipo(TipoCartao.CREDITO, TiposSeguro.SEGURO_VIAGEM)) {
-            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro viagem.");
+        if (seguroRepository.existsByCartaoCreditoAndTipo(cartaoCredito, TiposSeguro.SEGURO_FRAUDE)) {
+            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro contra fraude.");
         }
 
         Seguro seguro = new Seguro();
@@ -86,29 +62,55 @@ public class SeguroService {
         seguro.setValor(5000.0);
         seguro.setNumeroApolice(UUID.randomUUID().toString());
         seguro.setDataInicio(LocalDate.now().toString());
-        seguro.setCartaoCredito(credito);
+        seguro.setCartaoCredito(cartaoCredito);
 
         return seguroRepository.save(seguro);
     }
 
-    public Seguro cancelarSeguro(Long id) {
-        Seguro seguro = seguroRepository.findById(id)
-                .orElseThrow(() -> new SeguroNaoEncontradoException("Seguro não encontrado."));
+    private CartaoCredito buscarEValidarCartaoCredito(Long cartaoId) {
+        Cartao cartao = cartaoRepository.findById(cartaoId)
+                .orElseThrow(() -> new CartaoNaoEncontradoException("Cartão com ID " + cartaoId + " não encontrado."));
 
-        if (seguro.getTipo() == TiposSeguro.SEGURO_FRAUDE) {
-            throw new OperacaoNaoPermitidaException("Seguro de fraude não pode ser cancelado.");
+        if (!(cartao instanceof CartaoCredito)) {
+            throw new OperacaoNaoPermitidaException("A operação de seguro só é permitida para cartões de crédito.");
         }
 
-        seguroRepository.deleteById(id);
+        if (cartao.getCliente() == null) {
+            throw new OperacaoNaoPermitidaException("Cartão com ID " + cartaoId + " não possui um cliente associado.");
+        }
+
+        return (CartaoCredito) cartao;
+    }
+
+    public Seguro cancelarSeguro(Long id) {
+        Seguro seguro = seguroRepository.findById(id)
+                .orElseThrow(() -> new SeguroNaoEncontradoException("Seguro com ID " + id + " não encontrado."));
+
+        if (seguro.getTipo() == TiposSeguro.SEGURO_FRAUDE) {
+            throw new OperacaoNaoPermitidaException("O seguro contra fraude é obrigatório e não pode ser cancelado.");
+        }
+
+        seguroRepository.delete(seguro);
         return seguro;
     }
 
     public Seguro buscarSeguroPorId(Long id) {
         return seguroRepository.findById(id)
-                .orElseThrow(() -> new SeguroNaoEncontradoException("Seguro não encontrado."));
+                .orElseThrow(() -> new SeguroNaoEncontradoException("Seguro com ID " + id + " não encontrado."));
     }
 
     public List<Seguro> listarSegurosPorCliente(Long clienteId) {
-        return seguroRepository.findByClienteId(clienteId);
+        List<Cartao> cartoesDoCliente = cartaoRepository.findByClienteId(clienteId);
+
+        List<CartaoCredito> cartoesCredito = cartoesDoCliente.stream()
+                .filter(CartaoCredito.class::isInstance)
+                .map(CartaoCredito.class::cast)
+                .collect(Collectors.toList());
+
+        if (cartoesCredito.isEmpty()){
+            return List.of();
+        }
+
+        return seguroRepository.findByCartaoCreditoIn(cartoesCredito);
     }
 }
