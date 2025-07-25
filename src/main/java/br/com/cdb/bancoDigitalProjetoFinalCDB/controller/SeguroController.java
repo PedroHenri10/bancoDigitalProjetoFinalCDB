@@ -21,12 +21,6 @@ public class SeguroController {
         return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
     }
 
-    @PostMapping("/contratar/fraude/{cartaoId}")
-    public ResponseEntity<SeguroRespostaDTO> contratarSeguroFraude(@PathVariable Long cartaoId) {
-        Seguro seguro = seguroService.contratarSeguroFraude(cartaoId);
-        return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
-    }
-
     @DeleteMapping("/{id}/cancelar")
     public ResponseEntity<SeguroRespostaDTO> cancelarSeguro(@PathVariable Long id) {
         Seguro seguro = seguroService.cancelarSeguro(id);
