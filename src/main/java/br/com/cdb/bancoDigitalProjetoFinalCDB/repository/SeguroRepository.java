@@ -1,5 +1,6 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.repository;
 
+import br.com.cdb.bancoDigitalProjetoFinalCDB.dto.SeguroRespostaDTO;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
@@ -14,8 +15,23 @@ import java.util.List;
 @Repository
 public interface SeguroRepository extends JpaRepository<Seguro, Long> {
 
-    @Query("SELECT DISTINCT s FROM Seguro s WHERE s.cartaoCredito IN :cartoesCredito")
-    List<Seguro> findByCartaoCreditoInDistinct(@Param("cartoesCredito") List<CartaoCredito> cartoesCredito);
+    interface SeguroClienteProjecao {
+        Long getId();
+        String getNumeroApolice();
+        TiposSeguro getTipo();
+        Double getValor();
+        String getDataInicio();
+        InfoCartaoCredito getCartaoCredito();
+
+        interface InfoCartaoCredito {
+            Long getNumeroCartao();
+        }
+    }
+
+    @Query("SELECT new br.com.cdb.bancoDigitalProjetoFinalCDB.dto.SeguroRespostaDTO(" +
+            "s.id, s.numeroApolice, s.tipo, s.valor, s.dataInicio, s.cartaoCredito.numeroCartao) " +
+            "FROM Seguro s WHERE s.cartaoCredito.cliente.id = :clienteId")
+    List<SeguroRespostaDTO> buscarSegurosDTOPorIdCliente(@Param("clienteId") Long clienteId);
     List<Seguro> findByCartaoCredito_NumeroCartao(Long numeroCartao);
 
     boolean existsByCartaoCreditoAndTipo(CartaoCredito cartaoCredito, TiposSeguro tipo);
