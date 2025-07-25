@@ -18,10 +18,10 @@ public interface CartaoRepository extends JpaRepository<Cartao, Long> {
     List<Cartao> findAllByConta_NumeroConta(Long numeroConta);
     boolean existsByConta_NumeroContaAndTipo(Long numeroConta, TipoCartao tipoCartao);
 
-    @Query("SELECT DISTINCT c FROM Cartao c LEFT JOIN FETCH c.conta WHERE c.numeroCartao = :id")
-    Optional<Cartao> findByIdDistinct(@Param("id") Long id);
+    @Query("SELECT c.numeroCartao FROM Cartao c WHERE c.cliente.id = :clienteId AND TYPE(c) = CartaoCredito")
+    List<Long> findNumeroCartaoCreditoByClienteId(@Param("clienteId") Long clienteId);
 
-    @Query("SELECT DISTINCT c FROM Cartao c WHERE c.cliente.id = :clienteId")
-    List<Cartao> findByClienteIdDistinct(@Param("clienteId") Long clienteId);
+    @Query("SELECT c FROM Cartao c WHERE c.numeroCartao = :id")
+    Optional<Cartao> findByIdSimple(@Param("id") Long id);
 
 }
