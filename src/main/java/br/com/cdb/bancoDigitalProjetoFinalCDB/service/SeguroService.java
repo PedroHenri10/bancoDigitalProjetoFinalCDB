@@ -1,5 +1,6 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.service;
 
+import br.com.cdb.bancoDigitalProjetoFinalCDB.dto.SeguroRespostaDTO;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Cartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.CartaoCredito;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
@@ -50,35 +51,15 @@ public class SeguroService {
         return seguroRepository.save(seguro);
     }
 
-    public Seguro contratarSeguroFraude(Long cartaoId) {
-        CartaoCredito cartaoCredito = buscarEValidarCartaoCredito(cartaoId);
-
-        if (seguroRepository.existsByCartaoCreditoAndTipo(cartaoCredito, TiposSeguro.SEGURO_FRAUDE)) {
-            throw new OperacaoNaoPermitidaException("Este cartão já possui um seguro contra fraude.");
-        }
-
-        Seguro seguro = new Seguro();
-        seguro.setTipo(TiposSeguro.SEGURO_FRAUDE);
-        seguro.setValor(5000.0);
-        seguro.setNumeroApolice(UUID.randomUUID().toString());
-        seguro.setDataInicio(LocalDate.now().toString());
-        seguro.setCartaoCredito(cartaoCredito);
-
-        return seguroRepository.save(seguro);
-    }
-
     private CartaoCredito buscarEValidarCartaoCredito(Long cartaoId) {
-        Cartao cartao = cartaoRepository.findByIdDistinct(cartaoId)
+        Cartao cartao = cartaoRepository.findById(cartaoId)
                 .orElseThrow(() -> new CartaoNaoEncontradoException("Cartão com ID " + cartaoId + " não encontrado."));
-
         if (!(cartao instanceof CartaoCredito)) {
             throw new OperacaoNaoPermitidaException("A operação de seguro só é permitida para cartões de crédito.");
         }
-
         if (cartao.getCliente() == null) {
             throw new OperacaoNaoPermitidaException("Cartão com ID " + cartaoId + " não possui um cliente associado.");
         }
-
         return (CartaoCredito) cartao;
     }
 
@@ -99,18 +80,19 @@ public class SeguroService {
                 .orElseThrow(() -> new SeguroNaoEncontradoException("Seguro com ID " + id + " não encontrado."));
     }
 
-    public List<Seguro> listarSegurosPorCliente(Long clienteId) {
-        List<Cartao> cartoesDoCliente = cartaoRepository.findByClienteIdDistinct(clienteId);
+    public List<SeguroRespostaDTO> listarSegurosPorCliente(Long clienteId) {
+        return seguroRepository.buscarSegurosDTOPorIdCliente(clienteId);
+    }
 
-        List<CartaoCredito> cartoesCredito = cartoesDoCliente.stream()
-                .filter(CartaoCredito.class::isInstance)
-                .map(CartaoCredito.class::cast)
-                .collect(Collectors.toList());
-
-        if (cartoesCredito.isEmpty()){
-            return List.of();
-        }
-
-        return seguroRepository.findByCartaoCreditoInDistinct(cartoesCredito);
+    public SeguroRespostaDTO converterParaDTO(Seguro seguro) {
+        if (seguro == null) return null;
+        return new SeguroRespostaDTO(
+                seguro.getId(),
+                seguro.getNumeroApolice(),
+                seguro.getTipo(),
+                seguro.getValor(),
+                seguro.getDataInicio(),
+                seguro.getCartaoCredito() != null ? seguro.getCartaoCredito().getNumeroCartao() : null
+        );
     }
 }
