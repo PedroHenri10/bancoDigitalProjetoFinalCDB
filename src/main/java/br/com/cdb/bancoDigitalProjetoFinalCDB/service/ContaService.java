@@ -40,7 +40,8 @@ public class ContaService {
 
         return contaRepository.save(conta);
     }
-    
+
+
     public ContaPoupanca criarContaPoupanca(ContaPoupanca conta) {
         Cliente cliente = clienteRepository.findById(conta.getCliente().getId())
             .orElseThrow(() -> new RuntimeException("Cliente não encontrado"));

@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
@@ -23,6 +23,11 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 @Inheritance(strategy = InheritanceType.JOINED)
 @DiscriminatorColumn(name = "tipo_conta", discriminatorType = DiscriminatorType.STRING)
 @Table(name ="conta")
+@JsonIdentityInfo(
+	    generator = PropertyGenerator.class,
+	    property = "numeroConta",
+	    scope = Conta.class
+	)
 public class Conta {
 
     @Id
@@ -32,11 +37,9 @@ public class Conta {
 
     @ManyToOne
     @JoinColumn(name = "cliente_id")
-    @JsonBackReference
     private Cliente cliente;
 
     @OneToMany(mappedBy = "conta", cascade = CascadeType.ALL)
-    @JsonManagedReference(value = "conta-cartoes")
     private List<Cartao> cartoes;
 
      public List<Cartao> getCartoes() {
@@ -74,7 +77,6 @@ public class Conta {
     public Conta() {
     }
 
-    
     public Conta(long numeroConta, double saldo, Cliente cliente) {
         this.numeroConta = numeroConta;
         this.saldo = saldo;

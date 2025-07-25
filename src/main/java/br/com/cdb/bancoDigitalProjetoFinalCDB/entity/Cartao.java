@@ -2,9 +2,12 @@ package br.com.cdb.bancoDigitalProjetoFinalCDB.entity;
 
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.StatusCartao;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCartao;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
@@ -51,6 +54,10 @@ public class Cartao {
     @ManyToOne
     @JoinColumn(name = "cliente_id")
     private Cliente cliente;
+
+    @OneToMany(mappedBy = "cartaoCredito", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Seguro> seguros = new ArrayList<>();
 
     public Long getNumeroCartao() {
         return numeroCartao;
@@ -108,6 +115,14 @@ public class Cartao {
         this.faturaAtual = faturaAtual;
     }
 
+    public List<Seguro> getSeguros() {
+        return seguros;
+    }
+
+    public void setSeguros(List<Seguro> seguros) {
+        this.seguros = seguros;
+    }
+
     public Cartao() {}
 
     public Cartao(Long numeroCartao, int senha, StatusCartao status, TipoCartao tipo, Conta conta, Cliente cliente, double faturaAtual) {
@@ -121,3 +136,4 @@ public class Cartao {
     }
 
 }
+

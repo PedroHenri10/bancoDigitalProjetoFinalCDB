@@ -1,15 +1,23 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.entity;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators.PropertyGenerator;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.enums.TipoCliente;
 
 @Entity
 @Table(name = "clientes")
+@JsonIdentityInfo(
+	    generator = PropertyGenerator.class,
+	    property = "id",
+	    scope = Cliente.class
+	)
 public class Cliente {
 
     @Id

@@ -22,9 +22,8 @@ public class Seguro {
 
     private String dataInicio;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "cartao_credito_id")
-    @JsonIgnore
     private CartaoCredito cartaoCredito;
 
     public Long getId() {
