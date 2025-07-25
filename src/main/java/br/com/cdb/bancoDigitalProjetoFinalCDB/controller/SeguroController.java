@@ -1,11 +1,11 @@
 package br.com.cdb.bancoDigitalProjetoFinalCDB.controller;
 
+import br.com.cdb.bancoDigitalProjetoFinalCDB.dto.SeguroRespostaDTO;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.entity.Seguro;
 import br.com.cdb.bancoDigitalProjetoFinalCDB.service.SeguroService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -16,30 +16,31 @@ public class SeguroController {
     private SeguroService seguroService;
 
     @PostMapping("/contratar/viagem/{cartaoId}")
-    public ResponseEntity<Seguro> contratarSeguroViagem(@PathVariable int cartaoId) {
+    public ResponseEntity<SeguroRespostaDTO> contratarSeguroViagem(@PathVariable Long cartaoId) {
         Seguro seguro = seguroService.contratarSeguroViagem(cartaoId);
-        return ResponseEntity.ok(seguro);
+        return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
     }
 
     @PostMapping("/contratar/fraude/{cartaoId}")
-    public ResponseEntity<Seguro> contratarSeguroFraude(@PathVariable int cartaoId) {
+    public ResponseEntity<SeguroRespostaDTO> contratarSeguroFraude(@PathVariable Long cartaoId) {
         Seguro seguro = seguroService.contratarSeguroFraude(cartaoId);
-        return ResponseEntity.ok(seguro);
+        return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
     }
 
-    @DeleteMapping("/cancelar/{id}")
-    public ResponseEntity<Seguro> cancelarSeguro(@PathVariable Long id) {
-        Seguro seguroCancelado = seguroService.cancelarSeguro(id);
-        return ResponseEntity.ok(seguroCancelado);
+    @DeleteMapping("/{id}/cancelar")
+    public ResponseEntity<SeguroRespostaDTO> cancelarSeguro(@PathVariable Long id) {
+        Seguro seguro = seguroService.cancelarSeguro(id);
+        return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Seguro> buscarSeguroPorId(@PathVariable Long id) {
-        return ResponseEntity.ok(seguroService.buscarSeguroPorId(id));
+    public ResponseEntity<SeguroRespostaDTO> buscarSeguroPorId(@PathVariable Long id) {
+        Seguro seguro = seguroService.buscarSeguroPorId(id);
+        return ResponseEntity.ok(seguroService.converterParaDTO(seguro));
     }
 
     @GetMapping("/cliente/{clienteId}")
-    public ResponseEntity<List<Seguro>> listarSegurosPorCliente(@PathVariable Long clienteId) {
+    public ResponseEntity<List<SeguroRespostaDTO>> listarSegurosPorCliente(@PathVariable Long clienteId) {
         return ResponseEntity.ok(seguroService.listarSegurosPorCliente(clienteId));
     }
 }
