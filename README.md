@@ -148,7 +148,7 @@ http://localhost:8080
 
 ---
 
-## Configuração do Banco de Dados (MySQL)
+### Configuração do Banco de Dados (MySQL)
 
 Crie um banco chamado `banco_digital` no MySQL.
 
@@ -162,23 +162,27 @@ spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
 
----
-
-📌 ## Melhorias Futuras
-
-- Autenticação com JWT
-
-- Testes com JUnit e Mockito
-
-- Integração com API externa (CEP, validações, CPF, Câmbio)
-
-- Frontend
-
-- Dashboard para controle financeiro dos clientes
 
 ---
 
-## Autor
+📌 Melhorias Futuras
+
+Autenticação com JWT
+
+Testes com JUnit e Mockito
+
+Integração com API externa (CEP, validações, CPF, Câmbio)
+
+Frontend
+
+Dashboard para controle financeiro dos clientes
+
+
+
+---
+
+Autor
+
 💻 Pedro Henrique Nunes
-🌐 linkedin: https://www.linkedin.com/in/p-henrique-nunes
-✉️ email: dinhonoliver@gmail.com
+🌐 LinkedIn
+✉️ dinhonoliver@gmail.com
