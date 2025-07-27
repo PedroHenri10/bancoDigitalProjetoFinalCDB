@@ -116,38 +116,6 @@ Durante o cadastro ou atualização de um cliente, as seguintes validações sã
 
 ---
 
-## Como Rodar o Projeto
-
-1. Clonar o Repositório
-
-git clone https://github.com/seuusuario/seurepositorio.git
-
-
-2. Importar no Eclipse
-
-Vá em File > Import
-
-Escolha Existing Maven Projects
-
-Selecione a pasta do projeto clonado
-
-Finalize com Finish
-
-
-3. Executar a Aplicação
-
-Localize a classe BancoDigitalProjetoFinalCdbApplication
-
-Clique com o botão direito > Run As > Java Application
-
-
-4. Testar com Postman ou Insomnia
-
-A aplicação estará rodando em:
-http://localhost:8080
-
----
-
 ### Configuração do Banco de Dados (MySQL)
 
 Crie um banco chamado `banco_digital` no MySQL.
