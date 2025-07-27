@@ -10,7 +10,7 @@ Este projeto é uma API REST de um sistema bancário digital desenvolvida com **
 - Spring Boot
 - Spring Data JPA
 - MySQL
-- Postman / Insomnia
+- Postman
 - Maven
 
 ---
@@ -108,8 +108,7 @@ Durante o cadastro ou atualização de um cliente, as seguintes validações sã
 - PUT     `/cartoes/debito/{id}/limite-diario?valor=500` → Ajustar limite diário  
 
 **Seguros**
-- POST    `/seguros/viagem/{idCartao}`          → Contratar seguro viagem  
-- POST    `/seguros/fraude/{idCartao}`          → Contratar seguro contra fraude  
+- POST    `/seguros/viagem/{idCartao}`          → Contratar seguro viagem    
 - GET     `/seguros/{id}`                       → Buscar seguro por ID  
 - DELETE  `/seguros/{id}`                       → Cancelar seguro (exceto fraude)  
 - GET     `/seguros/cliente/{clienteId}`        → Listar seguros do cliente  
@@ -162,6 +161,20 @@ spring.datasource.password=SUA_SENHA
 spring.jpa.hibernate.ddl-auto=update
 spring.jpa.show-sql=true
 spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.MySQL8Dialect
+
+---
+
+📌 ## Melhorias Futuras
+
+- Autenticação com JWT
+
+- Testes com JUnit e Mockito
+
+- Integração com API externa (CEP, validações, CPF, Câmbio)
+
+- Frontend
+
+- Dashboard para controle financeiro dos clientes
 
 ---
 
