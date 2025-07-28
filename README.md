@@ -1,6 +1,6 @@
-# Banco Digital - Projeto Final CDB
+# Banco Digital - Projeto Final CDB (código de base)
 
-Este projeto é uma API REST de um sistema bancário digital desenvolvida com **Spring Boot**, simulando operações como abertura de contas, emissão de cartões, transferências PIX, fatura de cartão de crédito, aplicação de taxas e seguros.
+Este projeto final é um desafio do código de base onde tem uma API REST de um sistema bancário digital desenvolvida com **Spring Boot**, simulando operações como abertura de contas, emissão de cartões, transferências PIX, fatura de cartão de crédito, aplicação de taxas e seguros.
 
 ---
 
@@ -183,6 +183,6 @@ Autor
 
 💻 Pedro Henrique Nunes
 
-🌐 LinkedIn
+🌐 https://www.linkedin.com/in/p-henrique-nunes
 
 ✉️ dinhonoliver@gmail.com
